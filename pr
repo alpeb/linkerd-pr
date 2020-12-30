@@ -1,0 +1,25 @@
+#!/bin/bash
+
+linkerd2_pulls_url="https://api.github.com/repos/linkerd/linkerd2/pulls"
+auth="Authorization: token $GITHUB_TOKEN"
+
+cd ~/src/pr
+rm -rf $1
+mkdir $1
+cd $1
+git clone git@github.com:linkerd/linkerd2.git
+cd linkerd2
+branch=$(curl -sL -H "$auth" "$linkerd2_pulls_url/$1" | jq -r '.head.label')
+forkRe='(.*):(.*)'
+if [[ "$branch" =~ $forkRe ]]; then
+  if [[ "${BASH_REMATCH[1]}" != 'linkerd' ]]; then
+    git remote add ${BASH_REMATCH[1]} git@github.com:${BASH_REMATCH[1]}/linkerd2.git
+    git fetch ${BASH_REMATCH[1]}
+    git co "${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
+  else
+    git co ${BASH_REMATCH[2]}
+  fi
+else
+  printf "BAD HEAD LABEL: \n" $branch
+  exit 1
+fi
