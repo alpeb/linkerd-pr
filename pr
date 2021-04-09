@@ -19,6 +19,8 @@ if [[ "$branch" =~ $forkRe ]]; then
   else
     git co ${BASH_REMATCH[2]}
   fi
+  echo " " >> README.md
+  tmux rename-window $1
 else
   printf "BAD HEAD LABEL: \n" $branch
   exit 1
