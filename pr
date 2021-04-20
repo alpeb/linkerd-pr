@@ -23,5 +23,4 @@ if [[ "$branch" =~ $forkRe ]]; then
   tmux rename-window $1
 else
   printf "BAD HEAD LABEL: \n" $branch
-  exit 1
 fi
